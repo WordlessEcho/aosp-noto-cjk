@@ -7,10 +7,24 @@ jobs:
   check-noto-version:
     runs-on: ubuntu-latest
     steps:
-      - id: get-sans-commit-info
+      - uses: actions/checkout@v2
+      - id: get-aosp-sans-commit
         run: |
-          echo 'sans_commit_info<<EOF' >> $GITHUB_ENV
+          echo 'local_sans_commit<<EOF' >> $GITHUB_ENV
+          echo ./Sans/commit_sha.txt >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - id: get-noto-sans-commit
+        run: |
+          echo 'remote_sans_commit_info<<EOF' >> $GITHUB_ENV
           curl -H "Accept: application/vnd.github.v3+json" \
           "https://api.github.com/repos/googlefonts/noto-cjk/commits?path=Sans&per_page=1" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-      - run: echo "${{ fromJSON(env.sans_commit_info)[0].commit.tree.sha }}"
+        run: |
+          echo 'remote_sans_commit<<EOF' >> $GITHUB_ENV
+          echo "${{ fromJSON(env.remote_sans_commit_info)[0].commit.tree.sha }}" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+  modify-noto:
+    if: ${{ env.remote_sans_commit != local_sans_commit }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${{ env.remote_sans_commit }}"
