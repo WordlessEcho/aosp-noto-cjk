@@ -13,9 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - id: get-aosp-sans-commit
         run: |
-          echo 'local_sans_commit<<EOF' >> $GITHUB_ENV
-          echo ./Sans/commit_sha.txt >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          echo $(local_sans_commit=./Sans/commit_sha.txt)
           echo "::set-output name=local::$local_sans_commit"
       - name: Fetch commit info from GitHub API
         run: |
