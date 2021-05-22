@@ -9,5 +9,5 @@ jobs:
       sans: ${{ steps.noto-sans-cjk.outputs.version }}
     steps:
       - id: noto-sans-cjk
-        run: echo "::set-output name=version::curl -H 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/googlefonts/noto-cjk/commits?path=Sans&per_page=1"
+        run: echo "::set-output name=version::$(curl -H 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/googlefonts/noto-cjk/commits?path=Sans&per_page=1)"
       - run: echo ${{ steps.noto-sans-cjk.outputs.version }}
