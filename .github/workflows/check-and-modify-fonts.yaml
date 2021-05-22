@@ -7,9 +7,9 @@ jobs:
   check-noto-version:
     runs-on: ubuntu-latest
     steps:
-      - id: noto-sans-cjk
+      - id: get-sans-commit-info
         run: |
           echo 'sans_commit_info<<EOF' >> $GITHUB_ENV
-          curl "https://api.github.com/repos/googlefonts/noto-cjk/commits?path=Sans&per_page=1" >> $GITHUB_ENV
+          curl -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/googlefonts/noto-cjk/commits?path=Sans&per_page=1" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-      - run: echo "${{ env.sans_commit_info }}"
+      - run: echo "${{ toJSON(env.sans_commit_info)[0].commit.tree.sha }}"
