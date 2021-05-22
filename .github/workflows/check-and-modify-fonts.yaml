@@ -6,14 +6,12 @@ on:
 jobs:
   check-noto-version:
     runs-on: ubuntu-latest
-    outputs:
-      result: ${{ env.local_sans_commit == env.remote_sans_commit }}
     steps:
       - uses: actions/checkout@v2
       - id: get-aosp-sans-commit
         run: |
           echo 'local_sans_commit<<EOF' >> $GITHUB_ENV
-          echo ./Sans/commit_sha.txt >> $GITHUB_ENV
+          cat ./Sans/commit_sha.txt >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
       - name: Fetch commit info from GitHub API
         run: |
@@ -29,6 +27,6 @@ jobs:
   modify-noto:
     needs: check-noto-version
     runs-on: ubuntu-latest
-    if: ${{ !needs.check-noto-version.outputs.result }}
+    if: ${{ needs.check-noto-version.env.local_sans_commit != needs.check-noto-version.env.remote_sans_commit }}
     steps:
-      - run: echo "${{ needs.check-noto-version.outputs.result }}"
+      - run: echo "${{ needs.check-noto-version.env.local_sans_commit }}"
