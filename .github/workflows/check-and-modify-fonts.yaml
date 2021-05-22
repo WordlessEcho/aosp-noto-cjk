@@ -7,15 +7,14 @@ jobs:
   check-noto-version:
     runs-on: ubuntu-latest
     outputs:
-      local: ${{ steps.get-aosp-sans-commit.outputs.commit }}
-      remote: ${{ steps.get-noto-sans-commit.outputs.commit }}
+      result: ${{ env.local_sans_commit == env.remote_sans_commit }}
     steps:
       - uses: actions/checkout@v2
       - id: get-aosp-sans-commit
         run: |
-          local_sans_commit=$(cat ./Sans/commit_sha.txt)
-          echo $local_sans_commit
-          echo "::set-output name=local::$local_sans_commit"
+          echo 'local_sans_commit<<EOF' >> $GITHUB_ENV
+          echo ./Sans/commit_sha.txt >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
       - name: Fetch commit info from GitHub API
         run: |
           echo 'remote_sans_commit_info<<EOF' >> $GITHUB_ENV
@@ -27,10 +26,9 @@ jobs:
           echo 'remote_sans_commit<<EOF' >> $GITHUB_ENV
           echo "${{ fromJSON(env.remote_sans_commit_info)[0].commit.tree.sha }}" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          echo "::set-output name=commit::$remote_sans_commit"
   modify-noto:
     needs: check-noto-version
     runs-on: ubuntu-latest
-    if: ${{ needs.check-noto-version.outputs.remote != needs.check-noto-version.outputs.local }}
+    if: ${{ !needs.check-noto-version.outputs.result }}
     steps:
-      - run: echo "${{ needs.check-noto-version.outputs.remote }}"
+      - run: echo "${{ needs.check-noto-version.outputs.result }}"
