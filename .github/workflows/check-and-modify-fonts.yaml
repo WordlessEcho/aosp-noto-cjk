@@ -16,7 +16,7 @@ jobs:
           echo 'local_sans_commit<<EOF' >> $GITHUB_ENV
           cat ./Sans/commit_sha.txt >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          echo "::set-output name=local::$(echo ${{ env.local_sans_commit }})"
+          echo ::set-output name=local::$(echo $local_sans_commit)
       - name: Fetch commit info from GitHub API
         run: |
           echo 'remote_sans_commit_info<<EOF' >> $GITHUB_ENV
@@ -28,7 +28,7 @@ jobs:
           echo 'remote_sans_commit<<EOF' >> $GITHUB_ENV
           echo "${{ fromJSON(env.remote_sans_commit_info)[0].commit.tree.sha }}" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          echo "::set-output name=remote::$(echo ${{ env.remote_sans_commit }})"
+          echo "::set-output name=remote::$(echo $env.remote_sans_commit)"
   modify-noto:
     needs: check-noto-version
     runs-on: ubuntu-latest
