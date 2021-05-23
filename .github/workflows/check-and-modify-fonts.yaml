@@ -4,7 +4,7 @@ on:
   schedule:
     - cron:  '0 0 * * *'
 jobs:
-  modify-sans:
+  modify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -29,10 +29,18 @@ jobs:
           mkdir ./tmp
           mkdir ./tmp/aosp-noto-script
       # TODO: comapre serif commit sha
-      - id: get-toolchains
+      - id: get-aosp-noto-script
         if: ${{ env.local_sans_commit != env.remote_sans_commit }}
+        working-directory: ./tmp/aosp-noto-script
         run: |
           curl "https://android.googlesource.com/platform/external/noto-fonts/+/refs/heads/android11-qpr2-release/cjk/subset_noto_cjk.py?format=TEXT" \
           | base64 --decode > subset_noto_cjk.py
+          sed -i '$ d' subset_noto_cjk.py
+          sed -i '$ d' subset_noto_cjk.py
           cat subset_noto_cjk.py
-        working-directory: ./tmp/aosp-noto-script
+      - id: get-east-asian-spacing
+        if: ${{ env.local_sans_commit != env.remote_sans_commit }}
+        working-directory: ./tmp
+        run: |
+          git clone https://github.com/kojiishi/east_asian_spacing.git
+      - run: ls -al
